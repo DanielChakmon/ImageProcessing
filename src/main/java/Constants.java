@@ -16,7 +16,7 @@ public class Constants {
     public static final int LIGHTER = 5;
     public static final int WINDOW_WIDTH = 1200;
     public static final int WINDOW_HEIGHT = 650;
-    public static JFrame myWindow;
+    public static JPanel myWindow;
     public static final int LABEL_WIDTH = 110;
     public static final int LABEL_HEIGHT = 30;
     public static final int SPACE_BETWEEN_BOXES = 30;
@@ -27,11 +27,12 @@ public class Constants {
     public static final int BUTTON_HEIGHT = 30;
     public static final int MARGIN_FROM_TOP = 10;
     public static final int MARGIN_FROM_LEFT = 5;
-    public static final int IMAGE_MAX_WIDTH = 500;
-    public static final int IMAGE_MAX_HEIGHT=500;
+    public static final int IMAGE_MAX_WIDTH = 450;
+    public static final int IMAGE_MAX_HEIGHT=450;
     public static final int BIG_TEXT_SIZE=20;
+    public static final int SLEEP_TIME = 60;
 
-    public static void getWindowData(JFrame window) {
+    public static void getWindowData(JPanel window) {
         myWindow = window;
     }
 }

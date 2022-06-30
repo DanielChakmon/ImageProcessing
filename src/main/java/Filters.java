@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+import static java.awt.image.BufferedImage.TYPE_CUSTOM;
+
 public class Filters {
     private int filterIndex;
     private BufferedImage image;
@@ -11,7 +13,17 @@ public class Filters {
         this.image = image;
         filterApplier();
     }
-
+    public Filters(){
+    }
+    public boolean isTheSamePic(BufferedImage image){
+        boolean ans=false;
+        if (this.image!=null){
+            if (this.image.equals(image)){
+                ans=true;
+            }
+        }
+        return ans;
+    }
     public void setFilterIndex(int filterIndex) {
         this.filterIndex = filterIndex;
         filterApplier();
@@ -67,7 +79,7 @@ public class Filters {
     }
 
     private void mirror(int x, int y) {
-        image.setRGB(image.getWidth() - x, y, image.getRGB(x, y));
+        image.setRGB(image.getWidth() - x-Constants.ONE, y, image.getRGB(x, y));
     }
 
     private void colorShiftRight(int x, int y) {
