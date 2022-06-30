@@ -29,6 +29,7 @@ public class MainPanel extends JPanel {
     private JButton negativeButton;
     private JButton sepiaButton;
     private JButton lighterButton;
+    private JButton flipHorizontallyButton;
     private BufferedImage originalImage;
     private BufferedImage changeableImage;
 
@@ -70,6 +71,9 @@ public class MainPanel extends JPanel {
         lighterButton = new JButton("Lighter");
         lighterButton.setBounds(sepiaButton.getX(), sepiaButton.getY() + Constants.SPACE_BETWEEN_LINES + sepiaButton.getHeight(), sepiaButton.getWidth(), sepiaButton.getHeight());
         this.add(lighterButton);
+        flipHorizontallyButton = new JButton("Flip horizontally");
+        flipHorizontallyButton.setBounds(lighterButton.getX(), lighterButton.getY() + Constants.SPACE_BETWEEN_LINES + lighterButton.getHeight(), lighterButton.getWidth(), lighterButton.getHeight());
+        this.add(flipHorizontallyButton);
         noImageLabel = new JLabel("<html>There's no image and therefore <BR>" +
                 "the buttons won't work <BR>" +
                 "use the search button <BR>" +
@@ -137,15 +141,19 @@ public class MainPanel extends JPanel {
         lighterButton.addActionListener(e -> {
             sendImageToFilters(changeableImage, Constants.LIGHTER, filters);
         });
+        flipHorizontallyButton.addActionListener(e -> {
+            sendImageToFilters(changeableImage, Constants.FLIP_HORIZONTALLY, filters);
+        });
     }
 
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
+
         if (originalImage != null) {
             ImageIcon originalImageIcon = new ImageIcon(originalImage);
             ImageIcon changeableImageIcon = new ImageIcon(changeableImage);
-            changeableImageIcon.paintIcon(this, graphics, Constants.WINDOW_WIDTH - Constants.MARGIN_FROM_LEFT - changeableImage.getWidth(), Constants.MARGIN_FROM_TOP);
-            originalImageIcon.paintIcon(this, graphics, Constants.MARGIN_FROM_LEFT, Constants.MARGIN_FROM_TOP);
+            changeableImageIcon.paintIcon(this, graphics, Constants.WINDOW_WIDTH - changeableImage.getWidth() - Constants.MARGIN_SIZE_FROM_SIDE * Constants.THREE, Constants.MARGIN_FROM_TOP);
+            originalImageIcon.paintIcon(this, graphics, Constants.MARGIN_SIZE_FROM_SIDE, Constants.MARGIN_FROM_TOP);
         }
     }
 
@@ -207,37 +215,45 @@ public class MainPanel extends JPanel {
         WebElement usersAncestor = null;
         WebElement placeAncestor = null;
         WebElement pageAncestor = null;
-
+        WebElement keyWordAncestor = null;
         try {
             usersAncestor = driver.findElement(By.cssSelector("div[data-module-result-type='user']"));
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
 
         }
         try {
             placeAncestor = driver.findElement(By.cssSelector("div[data-module-result-type='place']"));
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
 
         }
         try {
             pageAncestor = driver.findElement(By.cssSelector("div[data-module-result-type='page']"));
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
+
+        }
+        try {
+            keyWordAncestor = driver.findElement(By.cssSelector("div[data-module-result-type='keyword_entities']"));
+        } catch (NoSuchElementException e) {
 
         }
         List<WebElement> profiles = new ArrayList<>();
         try {
-            if (usersAncestor!=null){
+            if (usersAncestor != null) {
                 profiles.addAll(usersAncestor.findElements(By.xpath(".//*[@class='_9_7 _2rgt _1j-g _2rgt _86-3 _2rgt _1j-g _2rgt']")));
                 profiles.addAll(usersAncestor.findElements(By.xpath(".//*[@class='_a5o _9_7 _2rgt _1j-g _2rgt _86-3 _2rgt _1j-g _2rgt']")));
-        }
-            if (placeAncestor!=null) {
+            }
+            if (placeAncestor != null) {
                 profiles.addAll(placeAncestor.findElements(By.xpath(".//*[@class='_9_7 _2rgt _1j-g _2rgt _86-3 _2rgt _1j-g _2rgt']")));
                 profiles.addAll(placeAncestor.findElements(By.xpath(".//*[@class='_a5o _9_7 _2rgt _1j-g _2rgt _86-3 _2rgt _1j-g _2rgt']")));
             }
-            if (pageAncestor!=null) {
+            if (pageAncestor != null) {
                 profiles.addAll(pageAncestor.findElements(By.xpath(".//*[@class='_a5o _9_7 _2rgt _1j-g _2rgt _86-3 _2rgt _1j-g _2rgt']")));
                 profiles.addAll(pageAncestor.findElements(By.xpath(".//*[@class='_a5o _9_7 _2rgt _1j-g _2rgt _86-3 _2rgt _1j-g _2rgt']")));
             }
-         //   System.out.println(profiles.isEmpty());
+            if (keyWordAncestor != null) {
+                profiles.addAll(keyWordAncestor.findElements(By.xpath(".//*[@class='_9_7 _2rgt _1j-g _2rgt _86-3 _2rgt _1j-g _2rgt _3zi4 _2rgt _1j-f _2rgt']")));
+            }
+            //   System.out.println(profiles.isEmpty());
         } catch (NoSuchElementException exception) {
 
         } catch (NullPointerException exceptionTwo) {
@@ -252,37 +268,38 @@ public class MainPanel extends JPanel {
             Iterator<WebElement> iterator = profiles.iterator();
             iterator.next().click();
             Boolean inProfile = false;
-            WebElement profilePictureAncestor=null;
+            WebElement profilePictureAncestor = null;
+            driver.manage().timeouts().implicitlyWait(Constants.TWO, TimeUnit.SECONDS);
             try {
-                profilePictureAncestor = driver.findElement(By.className("_52jj _42b3"));
-            } catch (NoSuchElementException e){
+                profilePictureAncestor = driver.findElement(By.cssSelector("div[class='_52jj _42b3']"));
+            } catch (NoSuchElementException e) {
 
             }
             Boolean toBreak = false;
             while (true) {
                 if (!inProfile) {
                     try {
-                      //  if (driver.findElement(By.xpath(".//*[@class='_39pi _1mh-']")).isEnabled()) {
-                        if (driver.findElement((By.id("m-timeline-cover-section"))).isEnabled()){
+                        //  if (driver.findElement(By.xpath(".//*[@class='_39pi _1mh-']")).isEnabled()) {
+                        if (driver.findElement((By.id("m-timeline-cover-section"))).isEnabled()) {
                             inProfile = true;
                         } else {
                             if (driver.findElement((By.id("page"))).isEnabled()) {
                                 inProfile = true;
-                            }else {
+                            } else {
                                 continue;
                             }
                         }
 
                     } catch (NoSuchElementException exception) {
-                       try {
-                           if (driver.findElement((By.id("page"))).isEnabled()) {
-                               inProfile = true;
-                           } else {
-                               continue;
-                           }
-                       }catch (NoSuchElementException e){
-                           continue;
-                       }
+                        try {
+                            if (driver.findElement((By.id("page"))).isEnabled()) {
+                                inProfile = true;
+                            } else {
+                                continue;
+                            }
+                        } catch (NoSuchElementException e) {
+                            continue;
+                        }
                         continue;
                     }
 
@@ -290,7 +307,11 @@ public class MainPanel extends JPanel {
                     try {
                         if (!driver.findElements(By.xpath(".//*[@class='_39pi _1mh-']")).isEmpty()) {
                             if (profilePictureAncestor != null) {
-                                profilePictureAncestor.findElement(By.xpath(".//*[@class='_39pi _1mh-']")).click();
+                                try {
+                                    profilePictureAncestor.findElement(By.xpath(".//*[@class='_39pi _1mh-']")).click();
+                                } catch (NoSuchElementException exception) {
+                                    driver.findElement(By.xpath(".//*[@class='_39pi _1mh-']")).click();
+                                }
                             } else {
                                 try {
                                     driver.findElement(By.xpath(".//*[@class='_k7v _2rgt _1j-g _2rgt _83jk img']")).click();
@@ -305,7 +326,7 @@ public class MainPanel extends JPanel {
                     } catch (NoSuchElementException exception) {
                         warningLabelChanger("Profile picture isn't clickable, try something else");
                         break;
-                    }catch (NullPointerException exceptionTwo){
+                    } catch (NullPointerException exceptionTwo) {
                         warningLabelChanger("Profile picture isn't clickable, try something else");
                         break;
                     }
@@ -351,7 +372,7 @@ public class MainPanel extends JPanel {
     }
 
     public BufferedImage imageScaleWithRatio(BufferedImage image) {
-        double imageRatio = image.getWidth() / image.getHeight();
+        double imageRatio = ((double) image.getWidth()) / ((double) image.getHeight());
         double newWidth = Constants.ZERO;
         double newHeight = Constants.ZERO;
         if (image.getWidth() > image.getHeight()) {

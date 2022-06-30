@@ -1,8 +1,6 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import static java.awt.image.BufferedImage.TYPE_CUSTOM;
-
 public class Filters {
     private int filterIndex;
     private BufferedImage image;
@@ -34,6 +32,7 @@ public class Filters {
     }
 
     private void filterApplier() {
+        boolean stopRendering=false;
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++){
                 switch (filterIndex){
@@ -61,11 +60,25 @@ public class Filters {
                         lighter(i,j);
                         break;
                     }
+                    case Constants.FLIP_HORIZONTALLY:{
+                        if (i >=((image.getWidth()-Constants.ONE)/Constants.TWO)){
+                            stopRendering=true;
+                        }else {
+                            flipHorizontally(i,j);
+                        }
+                        break;
+                    }
                     default:{
                         System.out.println("Invalid filter");
                         break;
                     }
                 }
+                if (stopRendering){
+                    break;
+                }
+            }
+            if (stopRendering){
+                break;
             }
         }
         Constants.myWindow.repaint();
@@ -129,5 +142,12 @@ public class Filters {
         newRGB[newBlue] = (int) (pixelColor.getBlue() + ((double) (Constants.SOLID_COLOR_MAX_RGB_INDEX - pixelColor.getBlue())) * Constants.TENTH);
         Color lighterColor = new Color(newRGB[newRed], newRGB[newGreen], newRGB[newBlue]);
         image.setRGB(x, y, lighterColor.getRGB());
+    }
+    private void flipHorizontally(int x, int y){
+        int originalPixelRGB= image.getRGB(x, y);
+        int aboutToBeReplacedPixelRGB=image.getRGB(image.getWidth() - x-Constants.ONE,y);
+        image.setRGB(x,y,aboutToBeReplacedPixelRGB);
+        image.setRGB(image.getWidth() - x-Constants.ONE, y, originalPixelRGB);
+
     }
 }
