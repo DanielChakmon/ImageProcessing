@@ -11,6 +11,7 @@ public class Main extends JFrame {
         this.init();
         MainPanel mainPanel = new MainPanel(Constants.ZERO, Constants.ZERO, Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         this.add(mainPanel);
+        this.setVisible(true);
     }
 
     private void init() {
@@ -19,7 +20,7 @@ public class Main extends JFrame {
         this.setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(null);
-        this.setVisible(true);
+
     }
 
 
